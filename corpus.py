@@ -12,7 +12,7 @@ import mistune
 import util
 
 
-def load_json(p=None, include_is=True, include_oos=False):
+def load_json(p=None, include_is=True, include_oos=False, filter_deleted=True):
     assert include_is or include_oos
     files = []
     if include_is:
@@ -20,10 +20,19 @@ def load_json(p=None, include_is=True, include_oos=False):
     if include_oos:
         files.append("data-comments/oos_btc.jsonl")
 
+    filter_f = (
+        (lambda d: d["body"] != "[deleted]")
+        if filter_deleted
+        else (lambda _: True)
+    )
+
     return util.sample(
         it.ifilter(
-            lambda d: d["body"] != "[deleted]",
-            it.imap(json.loads, it.chain(it.imap(open, files)))),
+            filter_f,
+            it.chain.from_iterable(
+                it.imap(lambda f: (json.loads(l) for l in open(f)), files)
+            )
+        ),
         p
     )
 
@@ -124,7 +133,6 @@ class TextPreProcessor():
         for rt in self.rts:
             t = rt.transform(t)
         return t
-
 
 
 def ngram_iter(tokens, max_N=3):

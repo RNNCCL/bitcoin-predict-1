@@ -1,0 +1,1 @@
+'"subreddit":"(Bitcoin|btc|BitcoinMarkets|CryptoCurrency|BitcoinMining|bitcoin_uncensored|CryptoMarkets|BitcoinAll|Bitcoin_Classic)"'
